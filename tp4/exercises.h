@@ -8,7 +8,10 @@
 #include <vector>
 #include "graph.h"
 
-int ex1();
+int ex1(const std::string& path);
 int howManyAfter(const std::vector<std::string>&, char);
+
+std::vector<std::pair<int, int>> ex2();
+std::pair<int,int> sociology(std::vector<std::vector<int>>);
 
 #endif //CAL_TP_CLASSES_EXERCISES_H

@@ -13,9 +13,7 @@ int howManyAfter(const std::vector<std::string>& dic, char target){
             graph.addNode(w1[j]);
             graph.addNode(w2[j]);
             if (w1[j] != w2[j]) {
-                int node1 = graph.findNode(w1[j]),
-                    node2 = graph.findNode(w2[j]);
-                graph.addEdge(node1, node2);
+                graph.addEdge(w1[j], w2[j]);
                 break;
             }
         }
@@ -25,7 +23,7 @@ int howManyAfter(const std::vector<std::string>& dic, char target){
 
 }
 
-int ex1(std::string path){
+int ex1(const std::string& path){
     std::ifstream infile(path);
     if(!infile.is_open()){
         std::cout << "Error opening file " << path << '\n';

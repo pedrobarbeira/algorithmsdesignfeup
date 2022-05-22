@@ -10,6 +10,7 @@
 #include <vector>
 #include <list>
 #include <iostream>
+#include <stack>
 
 using namespace std;
 
@@ -31,10 +32,16 @@ class Graph {
     bool hasDir;        // false: undirect; true: directed
     vector<Node*> nodes; // The list of nodes being represented
 
+    void addEdgePvt(int src, int dest, int weight = 1) {
+        if (src<1 || src>n || dest<1 || dest>n) return;
+        nodes[src]->adj.push_back({dest, weight});
+        if (!hasDir) nodes[dest]->adj.push_back({src, weight});
+    }
 public:
 
     explicit Graph<T>(bool dir = false):n(0), hasDir(dir){
         nodes.push_back(new Node);
+        nodes[0]->visited = true;
     }
 
     void addNode(T value){
@@ -48,17 +55,16 @@ public:
         n++;
     }
 
-    void addEdge(int src, int dest, int weight = 1) {
-        if (src<1 || src>n || dest<1 || dest>n) return;
-        nodes[src]->adj.push_back({dest, weight});
-        if (!hasDir) nodes[dest]->adj.push_back({src, weight});
-    }
-
-
     int findNode(T value) {
         for(int i=0;i<nodes.size();i++)
             if(nodes[i]->value == value) return i;
         return 0;
+    }
+
+    void addEdge(T src, T dest, int weight=1){
+        int srcIndex = findNode(src),
+            destIndex = findNode(dest);
+        this->addEdgePvt(srcIndex, destIndex, weight);
     }
 
     int howManyBFS(int src){
@@ -83,6 +89,51 @@ public:
                     ret++;
                 }
             }
+        }
+        return ret;
+    }
+
+    std::stack<T> getStackDFS(){
+        std::stack<T> stacc;
+        for(auto node : nodes) node->visited = false;
+        for(auto node : nodes)
+            if(!node->visited) dfsVisit(node, stacc);
+        return stacc;
+    }
+
+    void dfsVisit(Node* node, std::stack<T>& stacc){
+        node->visited = true;
+        for(auto e : node->adj){
+            int w = e.dest;
+            if(!nodes[w]->visited) dfsVisit(nodes[w], stacc);
+        }
+        stacc.push(node->value);
+    }
+
+    Graph<T> transpose(){
+        Graph<T> transpost;
+        for(auto node : nodes){
+            T dest = node->value;
+            transpost.addNode(dest);
+            for (auto e : node->adj){
+                int w = e.dest;
+                T src = nodes[w]->value;
+                transpost.addNode(src);
+                transpost.addEdge(src, dest);
+            }
+        }
+        *this = transpost;
+    }
+
+    std::vector<std::vector<T>> kosaraju(std::stack<T>& stacc){
+        transpose();
+        std::vector<std::vector<T>> ret;
+        for(int i = 1; i < nodes.size(); i++){
+            nodes[i]->visited = false;
+        }
+        while(!stacc.empty()){
+            //TODO finish tomorrow
+
         }
         return ret;
     }
