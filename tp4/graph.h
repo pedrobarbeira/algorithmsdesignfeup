@@ -95,7 +95,7 @@ public:
 
     std::stack<T> getStackDFS(){
         std::stack<T> stacc;
-        for(auto node : nodes) node->visited = false;
+        for(int i = 1;i<nodes.size();i++) nodes[i]->visited = false;
         for(auto node : nodes)
             if(!node->visited) dfsVisit(node, stacc);
         return stacc;
@@ -105,7 +105,10 @@ public:
         node->visited = true;
         for(auto e : node->adj){
             int w = e.dest;
-            if(!nodes[w]->visited) dfsVisit(nodes[w], stacc);
+            if(!nodes[w]->visited) {
+                nodes[w]->parent = findNode(node->value);
+                dfsVisit(nodes[w], stacc);
+            }
         }
         stacc.push(node->value);
     }
@@ -122,18 +125,35 @@ public:
                 transpost.addEdge(src, dest);
             }
         }
-        *this = transpost;
+        return transpost;
     }
 
     std::vector<std::vector<T>> kosaraju(std::stack<T>& stacc){
-        transpose();
+        //TODO fix this - bullshit starts from DFS
+        *this = transpose();
         std::vector<std::vector<T>> ret;
         for(int i = 1; i < nodes.size(); i++){
             nodes[i]->visited = false;
         }
+        vector<T> entry;
         while(!stacc.empty()){
-            //TODO finish tomorrow
-
+            T val = stacc.top();
+            stacc.pop();
+            entry.push_back(val);
+            int index = findNode(val);
+            while(1) {
+                T parent = stacc.top();
+                stacc.pop();
+                int daddy = findNode(parent);
+                if(nodes[index]->parent == daddy && daddy != 0 && ! nodes[daddy]->visited)
+                    entry.push_back(parent);
+                else{
+                    stacc.push(parent);
+                    break;
+                }
+            }
+            ret.push_back(entry);
+            entry.clear();
         }
         return ret;
     }

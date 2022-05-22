@@ -8,7 +8,7 @@ std::pair<int,int>sociology(std::vector<std::vector<int>> data){
     Graph<int> graph;
     for(auto v : data){
         graph.addNode(v[0]);
-        for (int i=1;i<data.size();i++){
+        for (int i=1;i<v.size();i++){
             graph.addNode(v[i]);
             graph.addEdge(v[0], v[i]);
         }
